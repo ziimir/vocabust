@@ -1,0 +1,9 @@
+[package]
+name = "vocabust"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+reqwest = "0.12.13"
+tokio = { version = "1", features = ["full"] }
+scraper = "0.23.1"
