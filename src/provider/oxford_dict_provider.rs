@@ -42,7 +42,7 @@ impl DictProvider for OxfordDictProvider {
         OxfordDictProvider { client }
     }
 
-    async fn content(&self, query: &str) -> Result<String, DictProviderError> {
+    async fn content(&self, query: &str) -> Result<(String, String, Vec<String>), DictProviderError> {
         let url = Self::URL_TEMPLATE.replace("{}", query);
         let response = self.client.get(url).send().await?;
 
@@ -61,22 +61,57 @@ impl DictProvider for OxfordDictProvider {
                 )
             )?;
 
-        let word = self.word(&content).await;
+        let word = self
+            .word(&content)
+            .ok_or(DictProviderError::SelectError(String::from("word is not found")))?;
 
-        Ok(word)
+        let pos = self
+            .pos(&content)
+            .ok_or(DictProviderError::SelectError(String::from("pos is not found")))?;
+
+        let meaning_list = self
+            .meaning_list(&content);
+
+        Ok((word, pos, meaning_list))
     }
 }
 
+fn fold_strings_iter(acc: String, text: &str) -> String {
+    acc + text
+}
+
 impl OxfordDictProvider {
-    pub async fn word<'a>(&self, content: &ElementRef<'a>) -> String {
+    fn word<'a>(&self, content: &ElementRef<'a>) -> Option<String> {
         let word = content
             .select(&OxfordSelectors::word())
-            .next()
-            .unwrap()
+            .next()?
             .text()
-            .next()
-            .unwrap();
+            .fold(String::from(""), fold_strings_iter);
 
-        String::from(word)
+        Some(word)
+    }
+
+    fn pos<'a>(&self, content: &ElementRef<'a>) -> Option<String> {
+        let pos = content
+            .select(&OxfordSelectors::pos())
+            .next()?
+            .text()
+            .fold(String::from(""), fold_strings_iter);
+
+        Some(pos)
+    }
+
+    fn meaning_list<'a>(&self, content: &ElementRef<'a>) -> Vec<String> {
+        //let meaning_list: Vec<String> = content
+        let meaning_list: Vec<String> = content
+            .select(&OxfordSelectors::meaning_list())
+            .map(|list_item_element| {
+                list_item_element
+                    .text()
+                    .fold(String::from(""), fold_strings_iter)
+            })
+            .collect();
+
+        meaning_list
     }
 }

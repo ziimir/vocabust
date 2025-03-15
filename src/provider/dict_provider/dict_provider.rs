@@ -8,5 +8,5 @@ pub trait DictProvider {
 
     fn new(client: Client) -> Self;
 
-    async fn content(&self, query: &str) -> Result<String, DictProviderError>;
+    async fn content(&self, query: &str) -> Result<(String, String, Vec<String>), DictProviderError>;
 }
