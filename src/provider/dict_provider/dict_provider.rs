@@ -9,5 +9,5 @@ pub trait DictProvider {
 
     fn new(client: Client) -> Self;
 
-    async fn content(&self, query: &str) -> Result<WordData, DictProviderError>;
+    async fn word_definition(&self, query: &str) -> Result<WordData, DictProviderError>;
 }

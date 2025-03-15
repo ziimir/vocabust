@@ -10,7 +10,7 @@ async fn main() {
 
     let oxford_provider = OxfordDictProvider::new(client);
 
-    let word_data = oxford_provider.content(&query)
+    let word_data = oxford_provider.word_definition(&query)
         .await
         .unwrap_or_else(|err| panic!("Error during fetch and parse: {}", err));
 

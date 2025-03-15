@@ -1,14 +1,14 @@
 #[derive(Debug)]
 pub struct WordData {
-    word: String,
-    definitions: Vec<Definition>,
-    pronunciation_url: Option<String>,
+    pub word: String,
+    pub definitions: Vec<Definition>,
+    pub pronunciation_url: Option<String>,
 }
 
 #[derive(Debug)]
 pub struct Definition {
-    pos: String,
-    meaning: Vec<Meaning>,
+    pub pos: String,
+    pub meaning: Vec<Meaning>,
 }
 
 #[derive(Debug)]
@@ -18,11 +18,16 @@ pub struct Meaning {
 }
 
 impl WordData {
-    pub fn new(word: String, pos: String, meaning: Vec<Meaning>) -> Self {
+    pub fn new(
+        word: String,
+        pos: String,
+        meaning: Vec<Meaning>,
+        pronunciation_url: Option<String>,
+    ) -> Self {
         WordData {
             word,
             definitions: vec![Definition { pos, meaning }],
-            pronunciation_url: None,
+            pronunciation_url,
         }
     }
 }
