@@ -1,14 +1,38 @@
 use reqwest::Client;
-use scraper::{Html, Selector};
+use scraper::{Html, Selector, ElementRef};
 
-use crate::provider::dict_provider::{DictProvider, DictProviderError};
+use super::dict_provider::{DictProvider, DictSelectors, DictProviderError};
+
+struct OxfordSelectors {}
+
+impl DictSelectors for OxfordSelectors {
+    fn content() -> Selector {
+        Selector::parse("#entryContent").unwrap()
+    }
+
+    fn word() -> Selector {
+        Selector::parse(".headword").unwrap()
+    }
+
+    fn pos() -> Selector {
+        Selector::parse(".headword + .pos").unwrap()
+    }
+
+    fn meaning_list() -> Selector {
+        Selector::parse(".senses_multiple > .sense > .def").unwrap()
+    }
+
+    fn example_list() -> Selector {
+        Selector::parse(".senses_multiple > .sense > .examples > li").unwrap()
+    }
+
+    fn poi_links() -> Option<Selector> {
+        None
+    }
+}
 
 pub struct OxfordDictProvider {
     client: Client
-}
-
-impl OxfordDictProvider {
-    const CSS_SELECTOR: &str = "#entryContent";
 }
 
 impl DictProvider for OxfordDictProvider {
@@ -18,27 +42,41 @@ impl DictProvider for OxfordDictProvider {
         OxfordDictProvider { client }
     }
 
-    async fn content(&self, query: &str) -> Result<Html, DictProviderError> {
+    async fn content(&self, query: &str) -> Result<String, DictProviderError> {
         let url = Self::URL_TEMPLATE.replace("{}", query);
         let response = self.client.get(url).send().await?;
 
         let body = response.text().await?;
 
         let page = Html::parse_document(&body);
-        let content_selector = Selector::parse(Self::CSS_SELECTOR)?;
 
         let content = page
-            .select(&content_selector)
+            .select(&OxfordSelectors::content())
             .next()
             .ok_or_else(
                 || DictProviderError::ParseError(
                     String::from(
-                        format!("Element with selector {} not found", Self::CSS_SELECTOR)
+                        format!("Element with selector {:?} not found", OxfordSelectors::content())
                     )
                 )
             )?;
 
-        let fragment = Html::parse_fragment(&content.html());
-        Ok(fragment)
+        let word = self.word(&content).await;
+
+        Ok(word)
+    }
+}
+
+impl OxfordDictProvider {
+    pub async fn word<'a>(&self, content: &ElementRef<'a>) -> String {
+        let word = content
+            .select(&OxfordSelectors::word())
+            .next()
+            .unwrap()
+            .text()
+            .next()
+            .unwrap();
+
+        String::from(word)
     }
 }

@@ -8,10 +8,11 @@ async fn main() {
     let query = "hide";
 
     let oxford_provider = OxfordDictProvider::new(client);
+
     let content = oxford_provider.content(&query)
         .await
         .unwrap_or_else(|err| panic!("Error during fetch and parse: {}", err));
 
-    println!("{}", content.html());
+    println!("{}", content);
 }
 
