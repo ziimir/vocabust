@@ -1,5 +1,6 @@
 use reqwest::Client;
-use scraper::Html;
+
+use crate::data::WordData;
 
 use super::DictProviderError;
 
@@ -8,5 +9,5 @@ pub trait DictProvider {
 
     fn new(client: Client) -> Self;
 
-    async fn content(&self, query: &str) -> Result<(String, String, Vec<String>), DictProviderError>;
+    async fn content(&self, query: &str) -> Result<WordData, DictProviderError>;
 }

@@ -1,6 +1,8 @@
 use reqwest::Client;
 use scraper::{Html, Selector, ElementRef};
 
+use crate::data::{WordData, Meaning};
+
 use super::dict_provider::{DictProvider, DictSelectors, DictProviderError};
 
 struct OxfordSelectors {}
@@ -42,7 +44,7 @@ impl DictProvider for OxfordDictProvider {
         OxfordDictProvider { client }
     }
 
-    async fn content(&self, query: &str) -> Result<(String, String, Vec<String>), DictProviderError> {
+    async fn content(&self, query: &str) -> Result<WordData, DictProviderError> {
         let url = Self::URL_TEMPLATE.replace("{}", query);
         let response = self.client.get(url).send().await?;
 
@@ -54,7 +56,7 @@ impl DictProvider for OxfordDictProvider {
             .select(&OxfordSelectors::content())
             .next()
             .ok_or_else(
-                || DictProviderError::ParseError(
+                || DictProviderError::SelectError(
                     String::from(
                         format!("Element with selector {:?} not found", OxfordSelectors::content())
                     )
@@ -70,9 +72,10 @@ impl DictProvider for OxfordDictProvider {
             .ok_or(DictProviderError::SelectError(String::from("pos is not found")))?;
 
         let meaning_list = self
-            .meaning_list(&content);
+            .meaning_list(&content)
+            .ok_or(DictProviderError::SelectError(String::from("meanings is not found")))?;
 
-        Ok((word, pos, meaning_list))
+        Ok(WordData::new(word, pos, meaning_list))
     }
 }
 
@@ -88,6 +91,10 @@ impl OxfordDictProvider {
             .text()
             .fold(String::from(""), fold_strings_iter);
 
+        if word.is_empty() {
+            return None;
+        }
+
         Some(word)
     }
 
@@ -98,20 +105,47 @@ impl OxfordDictProvider {
             .text()
             .fold(String::from(""), fold_strings_iter);
 
+        if pos.is_empty() {
+            return None;
+        }
+
         Some(pos)
     }
 
-    fn meaning_list<'a>(&self, content: &ElementRef<'a>) -> Vec<String> {
-        //let meaning_list: Vec<String> = content
-        let meaning_list: Vec<String> = content
-            .select(&OxfordSelectors::meaning_list())
-            .map(|list_item_element| {
-                list_item_element
+    fn meaning_list<'a>(&self, content: &ElementRef<'a>) -> Option<Vec<Meaning>> {
+        let selector = Selector::parse(".senses_multiple > .sense").unwrap();
+
+        let meanings: Vec<Meaning> = content
+            .select(&selector)
+            .map(|sense_item_element| {
+                let def = sense_item_element
+                    .select(&Selector::parse(".def").unwrap())
+                    .next()?
                     .text()
-                    .fold(String::from(""), fold_strings_iter)
+                    .fold(String::from(""), fold_strings_iter);
+
+                let examples = sense_item_element
+                    .select(&Selector::parse(".examples li").unwrap())
+                    .map(|example_item_element| {
+                        example_item_element
+                            .text()
+                            .fold(String::from(""), fold_strings_iter)
+                        })
+                    .collect();
+
+                if def.is_empty() {
+                    return None;
+                }
+
+                Some(Meaning { description: def, examples })
             })
+            .filter_map(|x| x)
             .collect();
 
-        meaning_list
+        if meanings.len() == 0 {
+            return None;
+        }
+
+        Some(meanings)
     }
 }
