@@ -1,17 +1,25 @@
-mod provider;
+use std::fs::File;
 
-use provider::{DictProvider, OxfordDictProvider};
+mod data;
+mod provider;
+mod exporter;
+
+use provider::OxfordDictProvider;
+use exporter::create_anki_file;
 
 #[tokio::main]
 async fn main() {
+    let query = "elaborate";
+
     let client = reqwest::Client::new();
-    let query = "hide";
-
     let oxford_provider = OxfordDictProvider::new(client);
-    let content = oxford_provider.content(&query)
-        .await
-        .unwrap_or_else(|err| panic!("Error during fetch and parse: {}", err));
 
-    println!("{}", content.html());
+    let word_data = oxford_provider.search_word(&query).await.unwrap();
+
+    let mut file = File::create("anki.txt").unwrap();
+
+    create_anki_file(&mut file, &word_data).unwrap();
+
+    println!("done");
 }
 
