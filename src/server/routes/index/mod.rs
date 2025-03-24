@@ -1,0 +1,12 @@
+use super::AppState;
+use axum::{extract::State, routing::get, Router};
+use minijinja::context;
+
+async fn handler(State(state): State<AppState>) -> String {
+    let template = state.template_env.get_template("hello").unwrap();
+    template.render(context!(name => "Dan")).unwrap().to_string()
+}
+
+pub fn create_index_router() -> Router<AppState> {
+    Router::new().route("/", get(handler))
+}
