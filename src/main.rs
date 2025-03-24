@@ -7,9 +7,9 @@ use server::{AppState, create_routes};
 
 #[tokio::main]
 async fn main() {
-    let mut template_env = Environment::new();
+    let template_env = Environment::new();
     //template_env.set_loader(path_loader("templates"));
-    template_env.add_template("hello", "Hello {{ name }}!").unwrap();
+    //template_env.add_template("hello", "Hello {{ name }}!").unwrap();
 
     let app_state = AppState{ template_env };
 
