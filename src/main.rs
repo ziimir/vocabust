@@ -1,13 +1,15 @@
 use std::sync::Arc;
-use minijinja::Environment;
+use minijinja::{Environment, path_loader};
 
-mod server;
+mod infrastructure;
 
-use server::{AppState, create_routes};
+use infrastructure::{AppState, create_routes};
 
 #[tokio::main]
 async fn main() {
-    let template_env = Environment::new();
+    let mut template_env = Environment::new();
+    template_env.set_loader(path_loader("templates"));
+
     let app_state = AppState{ template_env };
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await.unwrap();
