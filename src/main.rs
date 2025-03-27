@@ -2,6 +2,7 @@ use std::sync::Arc;
 use minijinja::{Environment, path_loader};
 
 mod infrastructure;
+mod domain;
 
 use infrastructure::{AppState, create_routes};
 

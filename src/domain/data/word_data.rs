@@ -1,17 +1,19 @@
-#[derive(Debug)]
+use serde::Serialize;
+
+#[derive(Debug, Serialize)]
 pub struct WordData {
     pub word: String,
     pub definitions: Vec<Definition>,
     pub pronunciation_url: Option<String>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct Definition {
     pub pos: String,
     pub meaning: Vec<Meaning>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct Meaning {
     pub description: String,
     pub examples: Vec<String>,

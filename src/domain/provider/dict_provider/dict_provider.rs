@@ -1,6 +1,6 @@
 use scraper::{ElementRef, Html};
 
-use crate::data::{Meaning, WordData};
+use super::super::super::{Meaning, WordData};
 
 use super::DictProviderError;
 

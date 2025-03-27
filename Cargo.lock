@@ -1745,6 +1745,7 @@ dependencies = [
  "minijinja",
  "reqwest",
  "scraper",
+ "serde",
  "thiserror",
  "tokio",
 ]

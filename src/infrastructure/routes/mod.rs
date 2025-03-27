@@ -1,10 +1,13 @@
-mod index;
+mod handlers;
 
-use axum::Router;
+use axum::{routing::get, Router};
 
-use self::index::create_index_router;
-use crate::infrastructure::AppState;
+use crate::infrastructure::{AppRoute, AppState};
+use handlers::{home_route_handler, search_route_handler};
 
 pub fn create_routes(state: AppState) -> Router {
-    Router::new().merge(create_index_router()).with_state(state)
+    Router::new()
+        .route(AppRoute::Home.pattern(), get(home_route_handler))
+        .route(AppRoute::Search.pattern(), get(search_route_handler))
+        .with_state(state)
 }
