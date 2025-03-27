@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6 mb-6">
+    <!-- Карточка с формой -->
+    <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8 mt-12">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6 text-center">Поиск слова</h1>
+        <form action="{{ search_url }}" method="GET" class="space-y-4">
+            <div>
+                <label for="search" class="block text-sm font-medium text-gray-700">Введите слово</label>
+                <input type="text" id="search" name="q"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                       placeholder="Например: run" required>
+            </div>
+            <button type="submit"
+                    class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition">
+                Искать
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

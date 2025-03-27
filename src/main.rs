@@ -1,25 +1,18 @@
-use std::fs::File;
+use std::sync::Arc;
+use minijinja::{Environment, path_loader};
 
-mod data;
-mod provider;
-mod exporter;
+mod infrastructure;
+mod domain;
 
-use provider::OxfordDictProvider;
-use exporter::create_anki_file;
+use infrastructure::{AppState, create_routes};
 
 #[tokio::main]
 async fn main() {
-    let query = "elaborate";
+    let mut template_env = Environment::new();
+    template_env.set_loader(path_loader("templates"));
 
-    let client = reqwest::Client::new();
-    let oxford_provider = OxfordDictProvider::new(client);
+    let app_state = AppState{ template_env };
 
-    let word_data = oxford_provider.search_word(&query).await.unwrap();
-
-    let mut file = File::create("anki.txt").unwrap();
-
-    create_anki_file(&mut file, &word_data).unwrap();
-
-    println!("done");
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await.unwrap();
+    axum::serve(listener, create_routes(app_state)).await.unwrap();
 }
-

@@ -2,8 +2,7 @@ use futures::future::try_join_all;
 use reqwest::{Client, StatusCode};
 use scraper::{Html, Selector, ElementRef};
 
-use crate::data::{WordData, Meaning};
-
+use super::super::{WordData, Meaning};
 use super::dict_provider::{DictProvider, DictProviderError};
 
 const POS_EN_COUNT: u8 = 7; // количество частей речи в английском

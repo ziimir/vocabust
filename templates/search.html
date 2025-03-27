@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6 mb-6">
+    <h1 class="text-4xl font-bold text-gray-900 mb-2">{{ data.word }}</h1>
+
+    <!-- Произношение, если есть -->
+    {% if data.pronunciation_url %}
+        <div class="mb-4">
+            <audio controls class="w-full">
+                <source src="{{ data.pronunciation_url }}" type="audio/mpeg">
+                Ваш браузер не поддерживает аудио.
+            </audio>
+        </div>
+    {% endif %}
+
+    <!-- Определения -->
+    </div<div class="space-y-6">
+        {% for definition in data.definitions %}
+            <div class="border-l-4 border-blue-500 pl-4">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-3">{{ definition.pos }}</h2>
+                <div class="space-y-4">
+                    {% for meaning in definition.meaning %}
+                        <!-- Выделяем описание -->
+                        <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+                            <p class="text-gray-800 font-medium">{{ meaning.description }}</p>
+                            {% if meaning.examples %}
+                                <!-- Выделяем примеры -->
+                                <div class="mt-3 pl-4 border-l-2 border-gray-300">
+                                    <p class="text-sm text-gray-500 italic">Примеры:</p>
+                                    <ul class="list-disc pl-5 text-gray-700 space-y-1">
+                                        {% for example in meaning.examples %}
+                                            <li>{{ example }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
