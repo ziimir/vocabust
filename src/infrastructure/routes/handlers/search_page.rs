@@ -19,7 +19,7 @@ pub async fn search_route_handler(
     let client = reqwest::Client::new();
     let oxford_provider = OxfordDictProvider::new(client);
 
-    let word_data = oxford_provider.search_word(&query).await.unwrap();
+    let (word_data, original_query_link) = oxford_provider.search_word(&query).await.unwrap();
 
-    Html(template.render(context!{ query, data => word_data }).unwrap().to_string())
+    Html(template.render(context!{ query, original_query_link, data => word_data }).unwrap().to_string())
 }

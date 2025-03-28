@@ -2,7 +2,15 @@
 
 {% block content %}
 <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6 mb-6">
-    <h1 class="text-4xl font-bold text-gray-900 mb-2">{{ data.word }}</h1>
+    <div class="mb-2 ">
+        <h1 class="text-4xl font-bold text-gray-900 inline-flex">{{ data.word }}</h1>
+        <a href="{{ original_query_link }}" target="_blank" class="inline-flex items-center font-medium text-blue-600 dark:text-blue-500 hover:underline">
+            Посмотреть в словаре
+            <svg class="w-4 h-4 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+            </svg>
+        </a>
+    </div>
 
     <!-- Произношение, если есть -->
     {% if data.pronunciation_url %}

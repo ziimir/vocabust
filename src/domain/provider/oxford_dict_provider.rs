@@ -7,6 +7,8 @@ use super::dict_provider::{DictProvider, DictProviderError};
 
 const POS_EN_COUNT: u8 = 7; // количество частей речи в английском
 
+type OriginalLink = String;
+
 pub struct OxfordDictProvider {
     client: Client
 }
@@ -18,8 +20,9 @@ impl OxfordDictProvider {
         OxfordDictProvider { client }
     }
 
-    pub async fn search_word(&self, query: &str) -> Result<WordData, DictProviderError> {
-        let response = self.client.head(Self::URL_TEMPLATE.replace("{}", query)).send().await?;
+    pub async fn search_word(&self, query: &str) -> Result<(WordData, OriginalLink), DictProviderError> {
+        let query_url: OriginalLink = Self::URL_TEMPLATE.replace("{}", query);
+        let response = self.client.head(&query_url).send().await?;
         let url = response.url();
         let url_str = url.as_str();
 
@@ -85,7 +88,7 @@ impl OxfordDictProvider {
             }
         );
 
-        Ok(word_data)
+        Ok((word_data, query_url))
     }
 
     fn word_variants(&self, path: &str) -> Option<Vec<String>> {
