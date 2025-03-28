@@ -90,11 +90,19 @@ impl OxfordDictProvider {
 
     fn word_variants(&self, path: &str) -> Option<Vec<String>> {
         let segments = path.split("/").last()?;
-        let (word, _variant) = segments.rsplit_once("_")?;
+        let (word, variant) = segments
+            .rsplit_once("_")
+            .or(Some((segments, "")))?;
+
+        if variant.is_empty() {
+            return Some(vec![word.to_string()]);
+        }
 
         let variants_range: Vec<String> = (1 .. POS_EN_COUNT + 1)
             .into_iter()
-            .map(|i| format!("{}_{}", word, i))
+            .map(|i| {
+                format!("{}_{}", word, i)
+            })
             .collect();
 
         Some(variants_range)
@@ -168,7 +176,11 @@ impl DictProvider for OxfordDictProvider {
             .map(|sense_item_element| {
                 let def = sense_item_element
                     .select(&Selector::parse(".def").unwrap())
-                    .next()?
+                    .next()
+                    .or(sense_item_element
+                        .select(&Selector::parse(".sensetop").unwrap())
+                        .next()
+                    )?
                     .text()
                     .collect::<String>()
                     .trim()
