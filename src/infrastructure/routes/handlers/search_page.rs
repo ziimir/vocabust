@@ -3,10 +3,9 @@ use axum::{
     extract::{State, Query},
     response::{Html, IntoResponse},
 };
-
 use minijinja::context;
 
-use crate::domain::oxford_dict_provider::OxfordDictProvider;
+use crate::domain::{OxfordDictProvider, translate_word_data};
 use crate::infrastructure::AppState;
 
 pub async fn search_route_handler(
@@ -20,6 +19,10 @@ pub async fn search_route_handler(
     let oxford_provider = OxfordDictProvider::new(client);
 
     let (word_data, original_query_link) = oxford_provider.search_word(&query).await.unwrap();
+
+    let translations = translate_word_data(&word_data).await;
+
+    println!("{:#?}", translations);
 
     Html(template.render(context!{ query, original_query_link, data => word_data }).unwrap().to_string())
 }

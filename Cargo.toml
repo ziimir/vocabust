@@ -12,3 +12,4 @@ serde = { version = "1.0.219", features = ["derive"] }
 scraper = "0.23.1"
 thiserror = "2.0.12"
 futures = "0.3.31"
+libretranslate = "0.5.2"
