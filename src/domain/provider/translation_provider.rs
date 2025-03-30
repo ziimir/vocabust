@@ -1,7 +1,7 @@
 use futures::future::join_all;
 use libretranslate::{translate_url, Language, Translation, TranslateError};
 
-use crate::domain::WordData;
+use crate::domain::{WordData, TranslatedWordData};
 
 async fn translate(target: &str) -> Result<Translation, TranslateError> {
     translate_url(
@@ -13,18 +13,25 @@ async fn translate(target: &str) -> Result<Translation, TranslateError> {
     ).await
 }
 
-pub async fn translate_word_data(data: &WordData) -> Vec<String> {
-    join_all(
-        data.definitions
+pub async fn translate_word_data(data: &WordData) -> TranslatedWordData {
+    let translate_definitions = join_all(
+        data
+            .definitions
             .iter()
-            .flat_map(|definition| &definition.meaning)
-            .map(|meaning| translate(meaning.description.as_str()))
+            .map(|definition| async {
+                join_all(definition.meaning
+                    .iter()
+                    .map(|meaning| async {
+                        translate(meaning.description.as_str())
+                            .await
+                            .and_then(|tr| Ok(tr.output))
+                            .unwrap_or(String::from("Не удалось получить перевод"))
+                    })
+                )
+                    .await
+            })
     )
-        .await
-        .iter()
-        .map(|result| result.as_ref()
-            .and_then(|tr| Ok(tr.output.clone()))
-            .unwrap_or(String::from("Не удалось получить перевод"))
-        )
-        .collect::<Vec<String>>()
+        .await;
+
+    TranslatedWordData::new(translate_definitions)
 }
