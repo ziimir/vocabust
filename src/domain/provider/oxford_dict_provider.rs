@@ -30,6 +30,14 @@ impl OxfordDictProvider {
             .rsplit_once("/")
             .ok_or(DictProviderError::UrlParseError(url_str.to_string()))?;
 
+        if url.path() == "/" {
+            return Err(DictProviderError::BadRequest(format!("Bad query string: `{}`", query)));
+        }
+
+        if url.path().starts_with("/spellcheck") {
+            return Err(DictProviderError::NotFound(format!("Definition for query `{}` is not found", query)));
+        }
+
         let path = url.path();
         let word_variants: Vec<String> = self.word_variants(path)
             .ok_or(DictProviderError::UrlParseError(String::from("Fail to parse word variants")))?

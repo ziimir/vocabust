@@ -3,6 +3,12 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum DictProviderError {
+    #[error("Bad Request: {0}")]
+    BadRequest(String),
+
+    #[error("Not Found: {0}")]
+    NotFound(String),
+
     #[error("Request error: {0}")]
     RequestError(#[from] reqwest::Error),
 
