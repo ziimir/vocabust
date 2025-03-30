@@ -172,7 +172,9 @@ impl DictProvider for OxfordDictProvider {
     }
 
     fn meaning_list<'a>(&self, content: &ElementRef<'a>) -> Option<Vec<Meaning>> {
-        let selector = Selector::parse(".sense").unwrap();
+        let selector = Selector::parse(
+            ".entry > .sense_single .sense, .entry > .senses_multiple .sense",
+        ).unwrap();
 
         let meanings: Vec<Meaning> = content
             .select(&selector)

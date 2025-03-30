@@ -2,7 +2,7 @@ use serde::Serialize;
 
 #[derive(Debug, Serialize)]
 pub struct TranslatedWordData {
-    definitions: Vec<TranslatedDefinition>,
+    pub definitions: Vec<TranslatedDefinition>,
 }
 
 #[derive(Debug, Serialize)]

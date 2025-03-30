@@ -22,7 +22,15 @@ pub async fn search_route_handler(
 
     let translations = translate_word_data(&word_data).await;
 
-    println!("{:#?}", translations);
-
-    Html(template.render(context!{ query, original_query_link, data => word_data }).unwrap().to_string())
+    Html(
+        template.render(
+            context!{
+                query,
+                original_query_link,
+                data => word_data,
+                translations => translations.definitions
+        })
+            .unwrap()
+            .to_string()
+    )
 }

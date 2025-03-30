@@ -1,0 +1,25 @@
+{% macro word_meanings(id, meaning_list, translation_list) -%}
+<div class="space-y-4">
+    {% for meaning in meaning_list %}
+        <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+            <p data-popover-target="popover-{{id}}-{{ loop.index }}" class="text-gray-800 font-medium">{{ meaning.description }}</p>
+            <div data-popover id="popover-{{id}}-{{ loop.index }}" role="tooltip" class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-xs opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800">
+              <div class="px-3 py-2">
+                  <p>{{ translation_list[loop.index0] }}</p>
+              </div>
+              <div data-popper-arrow></div>
+          </div>
+          {% if meaning.examples %}
+          <div class="mt-3 pl-4 border-l-2 border-gray-300">
+            <p class="text-sm text-gray-500 italic">Примеры:</p>
+            <ul class="list-disc pl-5 text-gray-700 space-y-1">
+              {% for example in meaning.examples %}
+              <li>{{ example }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+        </div>
+    {% endfor %}
+</div>
+{%- endmacro %}
