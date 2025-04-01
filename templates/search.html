@@ -1,9 +1,16 @@
-{% from "search/word_meanings.html" import word_meanings %}
+{% from "search_macro/form.html" import form %}
+{% from "search_macro/word_meanings.html" import word_meanings %}
 
 {% extends "base.html" %}
 
+{% block title %}{{ data.word }} - Поиск{% endblock %}
+
 {% block content %}
 <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6 mb-6">
+    <div class="mb-4">
+        {{ form(search_url) }}
+    </div>
+
     <div class="mb-2">
         <h1 class="text-4xl font-bold text-gray-900 inline-flex">{{ data.word }}</h1>
         <a href="{{ original_query_link }}" target="_blank" class="inline-flex items-center font-medium text-blue-600 dark:text-blue-500 hover:underline">

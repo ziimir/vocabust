@@ -1,0 +1,26 @@
+{% macro form(search_url) -%}
+<div class="bg-white shadow-md rounded-lg p-4 mb-6">
+  <form
+    action="{{ search_url }}"
+    method="GET"
+    class="flex items-center space-x-4"
+  >
+    <div class="flex-1">
+      <input
+        type="text"
+        id="search"
+        name="q"
+        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        placeholder="Введите слово, например: run"
+        required
+      />
+    </div>
+    <button
+      type="submit"
+      class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition"
+    >
+      Искать
+    </button>
+  </form>
+</div>
+{%- endmacro %}

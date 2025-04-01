@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}400 - Некорректный запрос{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow-lg rounded-lg p-8 text-center">
+  <h1 class="text-6xl font-bold text-gray-900 mb-4">400</h1>
+  <p class="text-xl text-gray-600 mb-6">
+    Упс! Что-то пошло не так. Ваш запрос некорректен.
+  </p>
+  <p class="text-xl text-gray-600 mb-6">
+    {{ message }}
+  </p>
+  <a
+    href="/"
+    class="inline-block bg-blue-600 text-white font-semibold py-2 px-6 rounded-md hover:bg-blue-700 transition"
+  >
+    Вернуться на главную
+  </a>
+</div>
+{% endblock %}

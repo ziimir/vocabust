@@ -2,7 +2,10 @@
 <div class="space-y-4">
     {% for meaning in meaning_list %}
         <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
-            <p data-popover-target="popover-{{id}}-{{ loop.index }}" class="text-gray-800 font-medium">{{ meaning.description }}</p>
+            <p data-popover-target="popover-{{id}}-{{ loop.index }}" class="text-gray-800 font-medium">
+                {{ loop.index }}.
+                {{ meaning.description }}
+            </p>
             <div data-popover id="popover-{{id}}-{{ loop.index }}" role="tooltip" class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-xs opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800">
               <div class="px-3 py-2">
                   <p>{{ translation_list[loop.index0] }}</p>
