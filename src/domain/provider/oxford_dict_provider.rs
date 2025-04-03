@@ -7,7 +7,6 @@ use super::dict_provider::{DictProvider, DictProviderError};
 
 const POS_EN_COUNT: u8 = 7; // количество частей речи в английском
 
-type OriginalLink = String;
 
 pub struct OxfordDictProvider {
     client: Client
@@ -20,8 +19,8 @@ impl OxfordDictProvider {
         OxfordDictProvider { client }
     }
 
-    pub async fn search_word(&self, query: &str) -> Result<(WordData, OriginalLink), DictProviderError> {
-        let query_url: OriginalLink = Self::URL_TEMPLATE.replace("{}", query);
+    pub async fn search_word(&self, query: &str) -> Result<WordData, DictProviderError> {
+        let query_url = Self::URL_TEMPLATE.replace("{}", query);
         let response = self.client.head(&query_url).send().await?;
         let url = response.url();
         let url_str = url.as_str();
@@ -45,19 +44,19 @@ impl OxfordDictProvider {
             .map(|variant| format!("{}/{}", url_template, variant))
             .collect();
 
-        let responses: Result<Vec<Option<String>>, DictProviderError> = try_join_all(
+        let responses: Result<Vec<Option<(String, String)>>, DictProviderError> = try_join_all(
             word_variants
-                .iter()
+                .into_iter()
                 .map(|url| {
                     let client = self.client.clone();
 
                     async move {
-                        let response = client.get(url).send().await?;
+                        let response = client.get(&url).send().await?;
 
                         match response.status() {
                             status if status.is_success() => {
                                 let body = response.text().await?;
-                                Ok(Some(body))
+                                Ok(Some((url, body)))
                             },
                             StatusCode::NOT_FOUND => {
                                 Ok(None)
@@ -73,11 +72,11 @@ impl OxfordDictProvider {
             .await;
 
         let definitions = responses?
-            .iter()
+            .into_iter()
             .map(|res| {
                 match res {
-                    Some(data) => {
-                        let def = self.definition(&Html::parse_document(&data))?;
+                    Some((source, data)) => {
+                        let def = self.definition(&Html::parse_document(&data), source)?;
                         Ok(Some(def))
                     },
                     None => Ok(None),
@@ -96,7 +95,7 @@ impl OxfordDictProvider {
             }
         );
 
-        Ok((word_data, query_url))
+        Ok(word_data)
     }
 
     fn word_variants(&self, path: &str) -> Option<Vec<String>> {
@@ -121,7 +120,7 @@ impl OxfordDictProvider {
 }
 
 impl DictProvider for OxfordDictProvider {
-    fn definition(&self, data: &Html) -> Result<WordData, DictProviderError> {
+    fn definition(&self, data: &Html, source: String) -> Result<WordData, DictProviderError> {
         let content = data
             .select(&Selector::parse("#entryContent").unwrap())
             .next()
@@ -144,7 +143,7 @@ impl DictProvider for OxfordDictProvider {
         let pronunciation = self
             .pronunciation(&content);
 
-        Ok(WordData::new(word, pos, meaning_list, pronunciation))
+        Ok(WordData::new(word, pos, meaning_list, pronunciation, source))
     }
 
     fn word<'a>(&self, content: &ElementRef<'a>) -> Option<String> {

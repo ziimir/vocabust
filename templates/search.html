@@ -1,4 +1,5 @@
 {% from "search_macro/form.html" import form %}
+{% from "search_macro/source_link.html" import source_link %}
 {% from "search_macro/word_meanings.html" import word_meanings %}
 
 {% extends "base.html" %}
@@ -13,12 +14,6 @@
 
     <div class="mb-2">
         <h1 class="text-4xl font-bold text-gray-900 inline-flex">{{ data.word }}</h1>
-        <a href="{{ original_query_link }}" target="_blank" class="inline-flex items-center font-medium text-blue-600 dark:text-blue-500 hover:underline">
-            Посмотреть в словаре
-            <svg class="w-4 h-4 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
-            </svg>
-        </a>
     </div>
 
     <!-- Произношение, если есть -->
@@ -59,6 +54,9 @@
                      aria-labelledby="tab-{{ loop.index }}"
                  >
                     {{ word_meanings(loop.index, definition.meaning, translations[loop.index0].meaning) }}
+                    <div class="mt-4">
+                        {{ source_link(definition.source) }}
+                    </div>
                 </div>
             {% endfor %}
         </div>
@@ -69,6 +67,9 @@
                 <div class="border-l-4 border-blue-500 pl-4">
                     <h2 class="text-2xl font-semibold text-gray-800 mb-3">{{ definition.pos }}</h2>
                     {{ word_meanings(loop.index, definition.meaning, translations[loop.index0].meaning) }}
+                    <div class="mt-4">
+                        {{ source_link(definition.source) }}
+                    </div>
                 </div>
             {% endfor %}
         </div>

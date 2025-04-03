@@ -18,7 +18,7 @@ pub async fn search_route_handler(
     let client = reqwest::Client::new();
     let oxford_provider = OxfordDictProvider::new(client);
 
-    let (word_data, original_query_link) = oxford_provider.search_word(&query)
+    let word_data = oxford_provider.search_word(&query)
         .await
         .map_err(|err| {
             match err {
@@ -37,7 +37,6 @@ pub async fn search_route_handler(
         template.render(
             context!{
                 query,
-                original_query_link,
                 data => word_data,
                 translations => translations.definitions
         })

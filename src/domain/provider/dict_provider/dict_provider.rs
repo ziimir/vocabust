@@ -5,7 +5,7 @@ use super::super::super::{Meaning, WordData};
 use super::DictProviderError;
 
 pub trait DictProvider {
-    fn definition(&self, data: &Html) -> Result<WordData, DictProviderError>;
+    fn definition(&self, data: &Html, source: String) -> Result<WordData, DictProviderError>;
 
     fn word(&self, content: &ElementRef) -> Option<String>;
 

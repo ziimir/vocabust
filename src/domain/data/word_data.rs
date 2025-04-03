@@ -11,6 +11,7 @@ pub struct WordData {
 pub struct Definition {
     pub pos: String,
     pub meaning: Vec<Meaning>,
+    pub source: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -25,10 +26,15 @@ impl WordData {
         pos: String,
         meaning: Vec<Meaning>,
         pronunciation_url: Option<String>,
+        source: String,
     ) -> Self {
         WordData {
             word,
-            definitions: vec![Definition { pos, meaning }],
+            definitions: vec![Definition {
+                pos,
+                meaning,
+                source,
+            }],
             pronunciation_url,
         }
     }
