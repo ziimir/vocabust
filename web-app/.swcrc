@@ -1,0 +1,27 @@
+{
+    "jsc": {
+        "target": "es2021",
+        "parser": {
+            "syntax": "typescript",
+            "tsx": true,
+            "decorators": false
+        },
+        "transform": {
+            "react": {
+                "runtime": "automatic",
+                "importSource": "preact"
+            },
+            "decoratorMetadata": true
+        },
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"]
+        }
+    },
+    "module": {
+        "type": "es6",
+        "resolveFully": true,
+        "outFileExtension": "js"
+    },
+    "sourceMaps": true
+}

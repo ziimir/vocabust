@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",                      // Современно, нативно поддерживается Node 18+
+    "module": "ES2022",                    // Совместимо с SWC конфигом и Node
+    "lib": ["ES2022"],                       // Только нужные фичи
+    "moduleResolution": "node",              // Типичная настройка для Node.js
+    "resolveJsonModule": true,               // Чтобы импортировать .json как модули
+    "esModuleInterop": true,                 // Поддержка `import x from 'commonjs'`
+    "allowSyntheticDefaultImports": true,    // Для interop с CJS
+    "strict": true,                          // Строгая типизация всего
+    "forceConsistentCasingInFileNames": true,// Безошибочное поведение в Git + CI
+    "skipLibCheck": true,                    // Быстрее компиляция, можно оставить true
+    "noEmit": true,                          // Мы используем SWC для сборки, TS — только типы
+    "isolatedModules": true,                 // Требуется для безопасной сборки .ts по одному
+    "baseUrl": ".",                          // Удобный root import
+    "paths": {
+      "@/*": ["src/*"]                       // Алиасы, если хочешь
+    },
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact"
+  },
+  "include": ["src"],
+  "exclude": ["build", "node_modules"]
+}

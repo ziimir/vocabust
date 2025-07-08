@@ -1,0 +1,16 @@
+clean:
+  rm -rf build
+
+build:
+    npx swc src -d build
+
+run:
+    node build/src/index.js
+
+start: clean build run
+
+ts-check:
+    npx tsc --noEmit
+
+dev:
+  watchexec --watch src -e ts,tsx --restart just start
