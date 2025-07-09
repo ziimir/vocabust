@@ -1,11 +1,15 @@
 import { Request, Response } from 'express';
 
-import {renderHtml} from '@/core/renderers/renderHtml';
-import {MainPage} from '@/views/MainPage';
+import { appCommandBus } from '@/core/commands';
+import {RenderHtmlCommand} from '@/core/commands';
+import {MainPage} from '@/fsd/pages/MainPage';
 
-export default async (_req: Request, res: Response) => {
+export default async (req: Request, res: Response) => {
     try {
-        res.send(renderHtml(MainPage));
+        const renderPage = new RenderHtmlCommand(MainPage);
+        const html = await appCommandBus.execute(renderPage, {});
+
+        res.send(html);
     } catch (error) {
         res.status(500).send('Internal Error');
     }
